@@ -1,0 +1,14 @@
+﻿namespace FuelTracker.API.Models;
+
+public class FuelEntry
+{
+    public Guid Id { get; set; }
+    public Guid CarId { get; set; }
+    public DateTime Date { get; set; }
+    public int Odometer { get; set; }
+    public decimal Liters { get; set; }
+    public decimal PricePerLiter { get; set; }
+    public decimal TotalCost { get; set; }
+
+    public Car Car { get; set; } = null!;
+}
