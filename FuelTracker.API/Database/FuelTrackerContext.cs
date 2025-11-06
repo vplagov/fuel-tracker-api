@@ -7,6 +7,6 @@ public class FuelTrackerContext : DbContext
 {
     public FuelTrackerContext(DbContextOptions<FuelTrackerContext> options) : base(options) {}
     
-    public DbSet<Car> Cars => Set<Car>();
+    public DbSet<CarEntity> Cars => Set<CarEntity>();
     public DbSet<FuelEntry> FuelEntries => Set<FuelEntry>();
 }

@@ -10,5 +10,5 @@ public class FuelEntry
     public decimal PricePerLiter { get; set; }
     public decimal TotalCost { get; set; }
 
-    public Car Car { get; set; } = null!;
+    public CarEntity CarEntity { get; set; } = null!;
 }

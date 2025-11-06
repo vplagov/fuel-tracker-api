@@ -4,4 +4,4 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .idea/
-FuelTracker.API/appsettings.Development.json
+appsettings.Development.json
