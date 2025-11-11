@@ -21,9 +21,17 @@ public class CarService(
         return new CarResponse(Id: carEntity.Id, Name: carEntity.Name);
     }
 
-    public async Task<IEnumerable<CarResponse>> GetCars()
+    public async Task<List<CarResponse>> GetCars()
     {
         var cars = await carRepository.GetCars();
-        return cars.Select(e => new CarResponse(Id: e.Id, Name: e.Name));
+        return cars
+            .Select(e => new CarResponse(Id: e.Id, Name: e.Name))
+            .ToList();
+    }
+
+    public async Task<CarResponse?> GetCar(Guid id)
+    {
+        var car = await carRepository.GetCar(id);
+        return car == null ? null : new CarResponse(car.Id, car.Name);
     }
 }

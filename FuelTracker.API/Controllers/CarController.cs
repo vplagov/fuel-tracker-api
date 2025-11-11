@@ -13,7 +13,7 @@ public class CarController(CarService carService) : ControllerBase
     {
         var carResponse = await carService.Add(carRequest);
         
-        return Created($"/api/cars/{carResponse.Id}", carResponse); // TODO replace with CreatedAtAction when the GetCar action is available
+        return CreatedAtAction(nameof(GetCar), carResponse);
     }
 
     [HttpGet]
@@ -21,5 +21,16 @@ public class CarController(CarService carService) : ControllerBase
     {
         var cars = await carService.GetCars();
         return Ok(cars);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<CarResponse>> GetCar(Guid id)
+    {
+        var carResponse = await carService.GetCar(id);
+        if (carResponse == null)
+        {
+            return NotFound($"Car with id '{id}' not found");
+        }
+        return Ok(carResponse);
     }
 }

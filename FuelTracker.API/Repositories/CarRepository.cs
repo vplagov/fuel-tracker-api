@@ -15,4 +15,9 @@ public class CarRepository(FuelTrackerContext context)
     {
         return context.Cars.ToListAsync();
     }
+
+    public async Task<CarEntity?> GetCar(Guid id)
+    {
+        return await context.Cars.FindAsync(id);
+    }
 }
