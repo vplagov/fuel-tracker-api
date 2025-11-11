@@ -1,19 +1,18 @@
 ﻿using FuelTracker.API.Database;
 using FuelTracker.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FuelTracker.API.Repository;
 
-public class CarRepository
+public class CarRepository(FuelTrackerContext context)
 {
-    private readonly FuelTrackerContext  _context;
-    
-    public CarRepository(FuelTrackerContext context)
-    {
-        _context = context;
-    }
-
     public void Add(CarEntity carEntity)
     {
-        _context.Cars.Add(carEntity);
+        context.Cars.Add(carEntity);
+    }
+
+    public Task<List<CarEntity>> GetCars()
+    {
+        return context.Cars.ToListAsync();
     }
 }

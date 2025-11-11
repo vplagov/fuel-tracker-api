@@ -15,4 +15,11 @@ public class CarController(CarService carService) : ControllerBase
         
         return Created($"/api/cars/{carResponse.Id}", carResponse); // TODO replace with CreatedAtAction when the GetCar action is available
     }
+
+    [HttpGet]
+    public async Task<ActionResult<List<CarResponse>>> GetCars()
+    {
+        var cars = await carService.GetCars();
+        return Ok(cars);
+    }
 }
