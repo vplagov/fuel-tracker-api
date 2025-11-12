@@ -2,7 +2,7 @@
 using FuelTracker.API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FuelTracker.API.Repository;
+namespace FuelTracker.API.Repositories;
 
 public class CarRepository(FuelTrackerContext context)
 {

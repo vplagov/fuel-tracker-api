@@ -13,7 +13,7 @@ public class CarController(CarService carService) : ControllerBase
     {
         var carResponse = await carService.Add(carRequest);
         
-        return CreatedAtAction(nameof(GetCar), carResponse);
+        return CreatedAtAction(nameof(GetCar), new { id = carResponse.Id }, carResponse);
     }
 
     [HttpGet]

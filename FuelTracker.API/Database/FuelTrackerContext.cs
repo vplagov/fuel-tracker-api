@@ -9,4 +9,12 @@ public class FuelTrackerContext : DbContext
     
     public DbSet<CarEntity> Cars => Set<CarEntity>();
     public DbSet<FuelEntry> FuelEntries => Set<FuelEntry>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<FuelEntry>()
+            .HasOne(f => f.CarEntity)
+            .WithMany(c => c.FuelEntries)
+            .HasForeignKey(f => f.CarId);
+    }
 }

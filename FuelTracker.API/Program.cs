@@ -1,5 +1,5 @@
 using FuelTracker.API.Database;
-using FuelTracker.API.Repository;
+using FuelTracker.API.Repositories;
 using FuelTracker.API.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +13,8 @@ builder.Services.AddDbContext<FuelTrackerContext>(options =>
 
 builder.Services.AddScoped<CarRepository>();
 builder.Services.AddScoped<CarService>();
+builder.Services.AddScoped<FuelEntryRepository>();
+builder.Services.AddScoped<FuelEntryService>();
 
 var app = builder.Build();
 

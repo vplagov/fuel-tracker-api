@@ -1,6 +1,6 @@
 ﻿using FuelTracker.API.Database;
 using FuelTracker.API.Models;
-using FuelTracker.API.Repository;
+using FuelTracker.API.Repositories;
 
 namespace FuelTracker.API.Services;
 

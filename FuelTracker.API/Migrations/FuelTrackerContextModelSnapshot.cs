@@ -22,7 +22,7 @@ namespace FuelTracker.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("FuelTracker.API.Models.Car", b =>
+            modelBuilder.Entity("FuelTracker.API.Models.CarEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,16 +70,16 @@ namespace FuelTracker.API.Migrations
 
             modelBuilder.Entity("FuelTracker.API.Models.FuelEntry", b =>
                 {
-                    b.HasOne("FuelTracker.API.Models.Car", "Car")
+                    b.HasOne("FuelTracker.API.Models.CarEntity", "CarEntity")
                         .WithMany("FuelEntries")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Car");
+                    b.Navigation("CarEntity");
                 });
 
-            modelBuilder.Entity("FuelTracker.API.Models.Car", b =>
+            modelBuilder.Entity("FuelTracker.API.Models.CarEntity", b =>
                 {
                     b.Navigation("FuelEntries");
                 });
