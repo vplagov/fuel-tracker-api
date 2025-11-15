@@ -19,4 +19,15 @@ public class FuelEntryController(FuelEntryService fuelEntryService) : Controller
 
         return Created($"/api/cars/{carId}/fuel-entries/{fuelEntryResponse.Id}", fuelEntryResponse);
     }
+
+    [HttpGet("{carId:guid}/fuel-entries")]
+    public async Task<ActionResult<IList<FuelEntryResponse>>> GetFuelEntries(Guid carId)
+    {
+        var fuelEntries = await fuelEntryService.GetFuelEntries(carId);
+        if (fuelEntries == null)
+        {
+            return NotFound($"Car with ID '{carId}' not found");
+        }
+        return Ok(fuelEntries);
+    }
 }

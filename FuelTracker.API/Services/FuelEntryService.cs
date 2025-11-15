@@ -39,4 +39,24 @@ public class FuelEntryService(
             fuelEntry.PricePerLiter,
             fuelEntry.TotalCost);
     }
+
+    public async Task<IList<FuelEntryResponse>?> GetFuelEntries(Guid carId)
+    {
+        var car = await carRepository.GetCar(carId);
+        if (car == null)
+        {
+            return null;
+        }
+        
+        var fuelEntries = await fuelEntryRepository.GetFuelEntries(carId);
+        return fuelEntries.Select(f => 
+                new FuelEntryResponse(
+                    f.Id, 
+                    f.Date, 
+                    f.Odometer, 
+                    f.Liters, 
+                    f.PricePerLiter, 
+                    f.TotalCost))
+            .ToList();
+    }
 }
