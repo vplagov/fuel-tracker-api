@@ -18,4 +18,14 @@ public class FuelEntryRepository(FuelTrackerContext context)
             .OrderByDescending(entry => entry.Date)
             .ToListAsync();
     }
+
+    public ValueTask<FuelEntry?> GetFuelEntry(Guid fuelEntryId)
+    {
+        return context.FuelEntries.FindAsync(fuelEntryId);
+    }
+
+    public void Remove(FuelEntry fuelEntry)
+    {
+        context.FuelEntries.Remove(fuelEntry);
+    }
 }

@@ -59,4 +59,18 @@ public class FuelEntryService(
                     f.TotalCost))
             .ToList();
     }
+
+    public async Task<bool> Remove(Guid fuelEntryId)
+    {
+        var fuelEntryEntity = await fuelEntryRepository.GetFuelEntry(fuelEntryId);
+        if (fuelEntryEntity == null)
+        {
+            return false;
+        }
+        
+        fuelEntryRepository.Remove(fuelEntryEntity);
+        await context.SaveChangesAsync();
+
+        return true;
+    }
 }
