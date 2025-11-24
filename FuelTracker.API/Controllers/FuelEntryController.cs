@@ -41,4 +41,15 @@ public class FuelEntryController(FuelEntryService fuelEntryService) : Controller
         }
         return NotFound($"Fuel entry with ID '{fuelEntryId}' is not found");
     }
+
+    [HttpPut("fuel-entries/{fuelEntryId:guid}")]
+    public async Task<ActionResult> Update(Guid fuelEntryId, FuelEntryRequest request)
+    {
+        var fuelEntryResponse = await fuelEntryService.Update(fuelEntryId, request);
+        if (fuelEntryResponse == null)
+        {
+            return NotFound($"Fuel entry with ID '{fuelEntryId}' is not found");
+        }
+        return Ok(fuelEntryResponse);
+    }
 }

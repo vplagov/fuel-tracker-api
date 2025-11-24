@@ -73,4 +73,29 @@ public class FuelEntryService(
 
         return true;
     }
+
+    public async Task<FuelEntryResponse?> Update(Guid fuelEntryId, FuelEntryRequest payload)
+    {
+        var fuelEntryEntity = await fuelEntryRepository.GetFuelEntry(fuelEntryId);
+        if (fuelEntryEntity == null)
+        {
+            return null;
+        }
+
+        fuelEntryEntity.Date = payload.Date;
+        fuelEntryEntity.Odometer = payload.Odometer;
+        fuelEntryEntity.Liters = payload.Liters;
+        fuelEntryEntity.PricePerLiter = payload.PricePerLiter;
+        fuelEntryEntity.TotalCost = payload.Liters * payload.PricePerLiter;
+        
+        await context.SaveChangesAsync();
+        
+        return new FuelEntryResponse(
+            fuelEntryEntity.Id, 
+            fuelEntryEntity.Date, 
+            fuelEntryEntity.Odometer, 
+            fuelEntryEntity.Liters,
+            fuelEntryEntity.PricePerLiter,
+            fuelEntryEntity.TotalCost);
+    }
 }
