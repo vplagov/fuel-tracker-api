@@ -1,4 +1,5 @@
 ﻿using FuelTracker.API.Database;
+using FuelTracker.API.Extensions;
 using FuelTracker.API.Models;
 using FuelTracker.API.Repositories;
 
@@ -31,13 +32,7 @@ public class FuelEntryService(
         fuelEntryRepository.Add(fuelEntry);
         await context.SaveChangesAsync();
 
-        return new FuelEntryResponse(
-            fuelEntry.Id, 
-            fuelEntry.Date, 
-            fuelEntry.Odometer, 
-            fuelEntry.Liters,
-            fuelEntry.PricePerLiter,
-            fuelEntry.TotalCost);
+        return fuelEntry.ToResponse();
     }
 
     public async Task<IList<FuelEntryResponse>?> GetFuelEntries(Guid carId)
@@ -49,14 +44,8 @@ public class FuelEntryService(
         }
         
         var fuelEntries = await fuelEntryRepository.GetFuelEntries(carId);
-        return fuelEntries.Select(f => 
-                new FuelEntryResponse(
-                    f.Id, 
-                    f.Date, 
-                    f.Odometer, 
-                    f.Liters, 
-                    f.PricePerLiter, 
-                    f.TotalCost))
+        return fuelEntries
+            .Select(fuelEntry => fuelEntry.ToResponse())
             .ToList();
     }
 
@@ -89,13 +78,7 @@ public class FuelEntryService(
         fuelEntryEntity.TotalCost = payload.Liters * payload.PricePerLiter;
         
         await context.SaveChangesAsync();
-        
-        return new FuelEntryResponse(
-            fuelEntryEntity.Id, 
-            fuelEntryEntity.Date, 
-            fuelEntryEntity.Odometer, 
-            fuelEntryEntity.Liters,
-            fuelEntryEntity.PricePerLiter,
-            fuelEntryEntity.TotalCost);
+
+        return fuelEntryEntity.ToResponse();
     }
 }
