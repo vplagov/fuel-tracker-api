@@ -1,6 +1,7 @@
 ﻿using FuelTracker.API.Database;
 using FuelTracker.API.Models;
 using FuelTracker.API.Repositories;
+using FuelTracker.API.Shared;
 
 namespace FuelTracker.API.Services;
 
@@ -29,9 +30,11 @@ public class CarService(
             .ToList();
     }
 
-    public async Task<CarResponse?> GetCar(Guid id)
+    public async Task<Result<CarResponse>> GetCar(Guid id)
     {
         var car = await carRepository.GetCar(id);
-        return car == null ? null : new CarResponse(car.Id, car.Name);
+        return car == null ? 
+            Result<CarResponse>.Failure(ErrorType.NotFound, $"Car with id '{id}' not found") :
+            Result<CarResponse>.Success(new CarResponse(car.Id, car.Name));
     }
 }

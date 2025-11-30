@@ -2,6 +2,7 @@
 using FuelTracker.API.Extensions;
 using FuelTracker.API.Models;
 using FuelTracker.API.Repositories;
+using FuelTracker.API.Shared;
 
 namespace FuelTracker.API.Services;
 
@@ -10,12 +11,12 @@ public class FuelEntryService(
     CarRepository carRepository,
     FuelTrackerContext context)
 {
-    public async Task<FuelEntryResponse?> Add(Guid carId, FuelEntryRequest request)
+    public async Task<Result<FuelEntryResponse>> Add(Guid carId, FuelEntryRequest request)
     {
         var car = await carRepository.GetCar(carId);
         if (car == null)
         {
-            return null;
+            return Result<FuelEntryResponse>.Failure(ErrorType.NotFound, $"Car with ID '{carId}' not found");
         }
 
         var fuelEntry = new FuelEntry
@@ -32,43 +33,47 @@ public class FuelEntryService(
         fuelEntryRepository.Add(fuelEntry);
         await context.SaveChangesAsync();
 
-        return fuelEntry.ToResponse();
+        return Result<FuelEntryResponse>.Success(fuelEntry.ToResponse());
     }
 
-    public async Task<IList<FuelEntryResponse>?> GetFuelEntries(Guid carId)
+    public async Task<Result<List<FuelEntryResponse>>> GetFuelEntries(Guid carId)
     {
         var car = await carRepository.GetCar(carId);
         if (car == null)
         {
-            return null;
+            return  Result<List<FuelEntryResponse>>
+                .Failure(ErrorType.NotFound, $"Car with ID '{carId}' not found");
         }
         
         var fuelEntries = await fuelEntryRepository.GetFuelEntries(carId);
-        return fuelEntries
+        var fuelEntryResponses = fuelEntries
             .Select(fuelEntry => fuelEntry.ToResponse())
             .ToList();
+        return Result<List<FuelEntryResponse>>
+            .Success(fuelEntryResponses);
     }
 
-    public async Task<bool> Remove(Guid fuelEntryId)
+    public async Task<Result> Remove(Guid fuelEntryId)
     {
         var fuelEntryEntity = await fuelEntryRepository.GetFuelEntry(fuelEntryId);
         if (fuelEntryEntity == null)
         {
-            return false;
+            return Result.Failure(ErrorType.NotFound, $"Fuel entry with ID '{fuelEntryId}' is not found");
         }
         
         fuelEntryRepository.Remove(fuelEntryEntity);
         await context.SaveChangesAsync();
 
-        return true;
+        return Result.Success();
     }
 
-    public async Task<FuelEntryResponse?> Update(Guid fuelEntryId, FuelEntryRequest payload)
+    public async Task<Result<FuelEntryResponse>> Update(Guid fuelEntryId, FuelEntryRequest payload)
     {
         var fuelEntryEntity = await fuelEntryRepository.GetFuelEntry(fuelEntryId);
         if (fuelEntryEntity == null)
         {
-            return null;
+            return Result<FuelEntryResponse>
+                .Failure(ErrorType.NotFound, $"Fuel entry with ID '{fuelEntryId}' is not found");
         }
 
         fuelEntryEntity.Date = payload.Date;
@@ -79,6 +84,6 @@ public class FuelEntryService(
         
         await context.SaveChangesAsync();
 
-        return fuelEntryEntity.ToResponse();
+        return Result<FuelEntryResponse>.Success(fuelEntryEntity.ToResponse());
     }
 }

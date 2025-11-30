@@ -6,7 +6,7 @@ namespace FuelTracker.API.Controllers;
 
 [ApiController]
 [Route("api/cars")]
-public class CarController(CarService carService) : ControllerBase
+public class CarController(CarService carService) : BaseController
 {
     [HttpPost]
     public async Task<ActionResult<CarResponse>> AddCar(CarRequest carRequest)
@@ -26,11 +26,9 @@ public class CarController(CarService carService) : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<CarResponse>> GetCar(Guid id)
     {
-        var carResponse = await carService.GetCar(id);
-        if (carResponse == null)
-        {
-            return NotFound($"Car with id '{id}' not found");
-        }
-        return Ok(carResponse);
+        var result = await carService.GetCar(id);
+        return result.IsFailure ? 
+            HandleFailure(result) : 
+            Ok(result.Value);
     }
 }
