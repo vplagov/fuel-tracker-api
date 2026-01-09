@@ -7,31 +7,24 @@ public class BaseController : ControllerBase
 {
     protected ActionResult HandleFailure(Result result)
     {
-        switch (result.ErrorType)
+        return result.ErrorType switch
         {
-            case ErrorType.NotFound:
-                return Problem(
-                    statusCode: StatusCodes.Status404NotFound,
-                    detail: result.ErrorMessage,
-                    title: "Not Found");
-                
-            case ErrorType.Validation:
-                return Problem(
-                    statusCode: StatusCodes.Status400BadRequest,
-                    detail: result.ErrorMessage,
-                    title: "Validation Error");
-                
-            case ErrorType.Failure:
-                return Problem(
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    detail: result.ErrorMessage,
-                    title: "Internal Server Error");
-                
-            default:
-                return Problem(
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    detail: "An unexpected error occurred.",
-                    title: "Server Error");
-        }
+            ErrorType.NotFound => Problem(
+                statusCode: StatusCodes.Status404NotFound, 
+                detail: result.ErrorMessage,
+                title: "Not Found"),
+            ErrorType.Validation => Problem(
+                statusCode: StatusCodes.Status400BadRequest, 
+                detail: result.ErrorMessage,
+                title: "Validation Error"),
+            ErrorType.Failure => Problem(
+                statusCode: StatusCodes.Status500InternalServerError,
+                detail: result.ErrorMessage, 
+                title: "Internal Server Error"),
+            _ => Problem(
+                statusCode: StatusCodes.Status500InternalServerError, 
+                detail: "An unexpected error occurred.",
+                title: "Server Error")
+        };
     }
 }

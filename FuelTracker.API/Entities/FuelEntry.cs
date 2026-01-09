@@ -1,4 +1,4 @@
-﻿namespace FuelTracker.API.Models;
+﻿namespace FuelTracker.API.Entities;
 
 public class FuelEntry
 {

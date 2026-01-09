@@ -3,6 +3,7 @@ using System;
 using FuelTracker.API.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FuelTracker.API.Migrations
 {
     [DbContext(typeof(FuelTrackerContext))]
-    partial class FuelTrackerContextModelSnapshot : ModelSnapshot
+    [Migration("20251112193645_ConfigureFuelEntryCarRelationship")]
+    partial class ConfigureFuelEntryCarRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace FuelTracker.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("FuelTracker.API.Entities.CarEntity", b =>
+            modelBuilder.Entity("FuelTracker.API.Models.CarEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,17 +35,12 @@ namespace FuelTracker.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Cars");
                 });
 
-            modelBuilder.Entity("FuelTracker.API.Entities.FuelEntry", b =>
+            modelBuilder.Entity("FuelTracker.API.Models.FuelEntry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -73,48 +71,9 @@ namespace FuelTracker.API.Migrations
                     b.ToTable("FuelEntries");
                 });
 
-            modelBuilder.Entity("FuelTracker.API.Entities.UserEntity", b =>
+            modelBuilder.Entity("FuelTracker.API.Models.FuelEntry", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Username")
-                        .IsUnique();
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("FuelTracker.API.Entities.CarEntity", b =>
-                {
-                    b.HasOne("FuelTracker.API.Entities.UserEntity", "UserEntity")
-                        .WithMany("CarEntities")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserEntity");
-                });
-
-            modelBuilder.Entity("FuelTracker.API.Entities.FuelEntry", b =>
-                {
-                    b.HasOne("FuelTracker.API.Entities.CarEntity", "CarEntity")
+                    b.HasOne("FuelTracker.API.Models.CarEntity", "CarEntity")
                         .WithMany("FuelEntries")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -123,14 +82,9 @@ namespace FuelTracker.API.Migrations
                     b.Navigation("CarEntity");
                 });
 
-            modelBuilder.Entity("FuelTracker.API.Entities.CarEntity", b =>
+            modelBuilder.Entity("FuelTracker.API.Models.CarEntity", b =>
                 {
                     b.Navigation("FuelEntries");
-                });
-
-            modelBuilder.Entity("FuelTracker.API.Entities.UserEntity", b =>
-                {
-                    b.Navigation("CarEntities");
                 });
 #pragma warning restore 612, 618
         }
