@@ -22,7 +22,7 @@ namespace FuelTracker.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("FuelTracker.API.Models.CarEntity", b =>
+            modelBuilder.Entity("FuelTracker.API.Entities.CarEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,12 +32,17 @@ namespace FuelTracker.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Cars");
                 });
 
-            modelBuilder.Entity("FuelTracker.API.Models.FuelEntry", b =>
+            modelBuilder.Entity("FuelTracker.API.Entities.FuelEntry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,9 +73,48 @@ namespace FuelTracker.API.Migrations
                     b.ToTable("FuelEntries");
                 });
 
-            modelBuilder.Entity("FuelTracker.API.Models.FuelEntry", b =>
+            modelBuilder.Entity("FuelTracker.API.Entities.UserEntity", b =>
                 {
-                    b.HasOne("FuelTracker.API.Models.CarEntity", "CarEntity")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("FuelTracker.API.Entities.CarEntity", b =>
+                {
+                    b.HasOne("FuelTracker.API.Entities.UserEntity", "UserEntity")
+                        .WithMany("CarEntities")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserEntity");
+                });
+
+            modelBuilder.Entity("FuelTracker.API.Entities.FuelEntry", b =>
+                {
+                    b.HasOne("FuelTracker.API.Entities.CarEntity", "CarEntity")
                         .WithMany("FuelEntries")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -79,9 +123,14 @@ namespace FuelTracker.API.Migrations
                     b.Navigation("CarEntity");
                 });
 
-            modelBuilder.Entity("FuelTracker.API.Models.CarEntity", b =>
+            modelBuilder.Entity("FuelTracker.API.Entities.CarEntity", b =>
                 {
                     b.Navigation("FuelEntries");
+                });
+
+            modelBuilder.Entity("FuelTracker.API.Entities.UserEntity", b =>
+                {
+                    b.Navigation("CarEntities");
                 });
 #pragma warning restore 612, 618
         }

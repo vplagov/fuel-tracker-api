@@ -1,5 +1,5 @@
 ﻿using FuelTracker.API.Database;
-using FuelTracker.API.Models;
+using FuelTracker.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FuelTracker.API.Repositories;

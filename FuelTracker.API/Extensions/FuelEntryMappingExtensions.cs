@@ -1,3 +1,4 @@
+using FuelTracker.API.Entities;
 using FuelTracker.API.Models;
 
 namespace FuelTracker.API.Extensions;

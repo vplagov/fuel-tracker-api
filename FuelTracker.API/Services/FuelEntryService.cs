@@ -1,4 +1,5 @@
 ﻿using FuelTracker.API.Database;
+using FuelTracker.API.Entities;
 using FuelTracker.API.Extensions;
 using FuelTracker.API.Models;
 using FuelTracker.API.Repositories;
