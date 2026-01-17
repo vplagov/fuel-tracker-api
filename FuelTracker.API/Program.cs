@@ -12,8 +12,11 @@ builder.Services.AddDbContext<FuelTrackerContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<CarRepository>();
-builder.Services.AddScoped<CarService>();
 builder.Services.AddScoped<FuelEntryRepository>();
+builder.Services.AddScoped<UserRepository>();
+
+builder.Services.AddScoped<CarService>();
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<FuelEntryService>();
 
 var app = builder.Build();

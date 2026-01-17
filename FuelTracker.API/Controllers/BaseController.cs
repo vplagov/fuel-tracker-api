@@ -21,6 +21,10 @@ public class BaseController : ControllerBase
                 statusCode: StatusCodes.Status500InternalServerError,
                 detail: result.ErrorMessage, 
                 title: "Internal Server Error"),
+            ErrorType.Conflict => Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                detail: result.ErrorMessage,
+                title: "Resource already exists"),
             _ => Problem(
                 statusCode: StatusCodes.Status500InternalServerError, 
                 detail: "An unexpected error occurred.",
