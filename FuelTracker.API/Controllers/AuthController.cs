@@ -16,4 +16,11 @@ public class AuthController(AuthService authService) : BaseController
             HandleFailure(result) : 
             StatusCode(StatusCodes.Status201Created, result.Value);
     }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest loginRequest)
+    {
+        var result = await authService.Login(loginRequest);
+        return result.IsFailure ? HandleFailure(result) : Ok(result.Value);
+    }
 }

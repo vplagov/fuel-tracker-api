@@ -25,6 +25,10 @@ public class BaseController : ControllerBase
                 statusCode: StatusCodes.Status409Conflict,
                 detail: result.ErrorMessage,
                 title: "Resource already exists"),
+            ErrorType.Unauthorized => Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                detail: result.ErrorMessage,
+                title: "Unauthorized"),
             _ => Problem(
                 statusCode: StatusCodes.Status500InternalServerError, 
                 detail: "An unexpected error occurred.",

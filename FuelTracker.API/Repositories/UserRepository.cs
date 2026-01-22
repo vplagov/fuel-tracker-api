@@ -15,4 +15,10 @@ public class UserRepository(FuelTrackerContext context)
     {
         context.Users.Add(userEntity);
     }
+
+    public Task<UserEntity?> GetByUsernameAsync(string username)
+    {
+        return context.Users.AsNoTracking()
+            .SingleOrDefaultAsync(u => u.Username == username);
+    }
 }

@@ -33,4 +33,16 @@ public class AuthService(UserRepository userRepository, FuelTrackerContext conte
         var userResponse = new UserResponse(userEntity.Id, userEntity.Username);
         return Result<UserResponse>.Success(userResponse);
     }
+
+    public async Task<Result<LoginResponse>> Login(LoginRequest loginRequest)
+    {
+        var userEntity = await userRepository.GetByUsernameAsync(loginRequest.Username);
+        if (userEntity == null || !PasswordHasher.VerifyHashedPassword(loginRequest.Password, userEntity.PasswordHash))
+        {
+            return Result<LoginResponse>.Failure(ErrorType.Unauthorized, "Invalid username or password");
+        }
+
+        var userResponse = new LoginResponse(userEntity.Id, userEntity.Username);
+        return Result<LoginResponse>.Success(userResponse);
+    }
 }
