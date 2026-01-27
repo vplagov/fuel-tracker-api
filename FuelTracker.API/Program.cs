@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FuelTrackerContext>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<CarRepository>();
 builder.Services.AddScoped<FuelEntryRepository>();
 builder.Services.AddScoped<UserRepository>();

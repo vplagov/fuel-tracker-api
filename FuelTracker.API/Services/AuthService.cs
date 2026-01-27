@@ -1,17 +1,16 @@
 using FuelTracker.API.Database;
 using FuelTracker.API.Entities;
 using FuelTracker.API.Models;
-using FuelTracker.API.Repositories;
 using FuelTracker.API.Security;
 using FuelTracker.API.Shared;
 
 namespace FuelTracker.API.Services;
 
-public class AuthService(UserRepository userRepository, FuelTrackerContext context)
+public class AuthService(IUnitOfWork unitOfWork)
 {
     public async Task<Result<UserResponse>> RegisterUser(RegisterRequest registerRequest)
     {
-        var isExist = await userRepository.ExistsAsync(registerRequest.Username);
+        var isExist = await unitOfWork.UserRepository.ExistsAsync(registerRequest.Username);
         if (isExist)
         {
             return Result<UserResponse>.Failure(ErrorType.Conflict,
@@ -27,8 +26,8 @@ public class AuthService(UserRepository userRepository, FuelTrackerContext conte
             CreatedAt = DateTime.UtcNow
         };
         
-        userRepository.Add(userEntity);
-        await context.SaveChangesAsync();
+        unitOfWork.UserRepository.Add(userEntity);
+        await unitOfWork.CommitAsync();
 
         var userResponse = new UserResponse(userEntity.Id, userEntity.Username);
         return Result<UserResponse>.Success(userResponse);
@@ -36,7 +35,7 @@ public class AuthService(UserRepository userRepository, FuelTrackerContext conte
 
     public async Task<Result<LoginResponse>> Login(LoginRequest loginRequest)
     {
-        var userEntity = await userRepository.GetByUsernameAsync(loginRequest.Username);
+        var userEntity = await unitOfWork.UserRepository.GetByUsernameAsync(loginRequest.Username);
         if (userEntity == null || !PasswordHasher.VerifyHashedPassword(loginRequest.Password, userEntity.PasswordHash))
         {
             return Result<LoginResponse>.Failure(ErrorType.Unauthorized, "Invalid username or password");
