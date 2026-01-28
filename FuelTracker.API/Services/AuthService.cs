@@ -6,7 +6,9 @@ using FuelTracker.API.Shared;
 
 namespace FuelTracker.API.Services;
 
-public class AuthService(IUnitOfWork unitOfWork)
+public class AuthService(
+    IUnitOfWork unitOfWork,
+    JwtService jwtService)
 {
     public async Task<Result<UserResponse>> RegisterUser(RegisterRequest registerRequest)
     {
@@ -41,7 +43,9 @@ public class AuthService(IUnitOfWork unitOfWork)
             return Result<LoginResponse>.Failure(ErrorType.Unauthorized, "Invalid username or password");
         }
 
-        var userResponse = new LoginResponse(userEntity.Id, userEntity.Username);
+        var token = jwtService.GenerateToken(userEntity.Id, userEntity.Username);
+
+        var userResponse = new LoginResponse(userEntity.Id, userEntity.Username, token);
         return Result<LoginResponse>.Success(userResponse);
     }
 }
