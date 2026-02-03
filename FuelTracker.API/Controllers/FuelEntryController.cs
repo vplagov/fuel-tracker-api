@@ -1,10 +1,12 @@
 ﻿using FuelTracker.API.Models;
 using FuelTracker.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FuelTracker.API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api")]
 public class FuelEntryController(FuelEntryService fuelEntryService) : BaseController
 {
