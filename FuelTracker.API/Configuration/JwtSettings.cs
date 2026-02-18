@@ -2,17 +2,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FuelTracker.API.Configuration;
 
-public record JwtSettings(
+public record JwtSettings
+{
     [Required]
     [MinLength(32)]
-    string Secret, 
+    public required string Secret { get; init; }
     
     [Required]
-    string Issuer, 
+    public required string Issuer { get; init; }
     
     [Required]
-    string Audience, 
+    public required string Audience { get; init; }
     
     [Required]
     [Range(1, 60)]
-    int ExpirationMinutes);
+    public required int ExpirationMinutes { get; init; }
+}

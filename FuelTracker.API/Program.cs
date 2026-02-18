@@ -43,6 +43,7 @@ builder.Services
     .AddJwtBearer();
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<CarRepository>();
@@ -53,6 +54,7 @@ builder.Services.AddScoped<CarService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<FuelEntryService>();
 builder.Services.AddSingleton<JwtService>();
+builder.Services.AddScoped<UserContextService>();
 
 var app = builder.Build();
 

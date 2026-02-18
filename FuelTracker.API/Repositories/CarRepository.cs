@@ -11,13 +11,13 @@ public class CarRepository(FuelTrackerContext context)
         context.Cars.Add(carEntity);
     }
 
-    public Task<List<CarEntity>> GetCars()
+    public Task<List<CarEntity>> GetCars(Guid userId)
     {
-        return context.Cars.ToListAsync();
+        return context.Cars.Where(car => car.UserId == userId).ToListAsync();
     }
 
-    public async Task<CarEntity?> GetCar(Guid id)
+    public async Task<CarEntity?> GetCar(Guid carId, Guid userId)
     {
-        return await context.Cars.FindAsync(id);
+        return await context.Cars.FirstOrDefaultAsync(car => car.Id == carId && car.UserId == userId);
     }
 }

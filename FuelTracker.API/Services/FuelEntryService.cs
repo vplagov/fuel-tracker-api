@@ -6,11 +6,12 @@ using FuelTracker.API.Shared;
 
 namespace FuelTracker.API.Services;
 
-public class FuelEntryService(IUnitOfWork unitOfWork)
+public class FuelEntryService(IUnitOfWork unitOfWork, UserContextService userContextService)
 {
     public async Task<Result<FuelEntryResponse>> Add(Guid carId, FuelEntryRequest request)
     {
-        var car = await unitOfWork.CarRepository.GetCar(carId);
+        var userId = userContextService.GetUserId();
+        var car = await unitOfWork.CarRepository.GetCar(carId, userId);
         if (car == null)
         {
             return Result<FuelEntryResponse>.Failure(ErrorType.NotFound, $"Car with ID '{carId}' not found");
@@ -35,7 +36,8 @@ public class FuelEntryService(IUnitOfWork unitOfWork)
 
     public async Task<Result<List<FuelEntryResponse>>> GetFuelEntries(Guid carId)
     {
-        var car = await unitOfWork.CarRepository.GetCar(carId);
+        var userId = userContextService.GetUserId();
+        var car = await unitOfWork.CarRepository.GetCar(carId, userId);
         if (car == null)
         {
             return  Result<List<FuelEntryResponse>>
@@ -52,7 +54,8 @@ public class FuelEntryService(IUnitOfWork unitOfWork)
 
     public async Task<Result> Remove(Guid fuelEntryId)
     {
-        var fuelEntryEntity = await unitOfWork.FuelEntryRepository.GetFuelEntry(fuelEntryId);
+        var userId = userContextService.GetUserId();
+        var fuelEntryEntity = await unitOfWork.FuelEntryRepository.GetFuelEntry(fuelEntryId, userId);
         if (fuelEntryEntity == null)
         {
             return Result.Failure(ErrorType.NotFound, $"Fuel entry with ID '{fuelEntryId}' is not found");
@@ -66,7 +69,8 @@ public class FuelEntryService(IUnitOfWork unitOfWork)
 
     public async Task<Result<FuelEntryResponse>> Update(Guid fuelEntryId, FuelEntryRequest payload)
     {
-        var fuelEntryEntity = await unitOfWork.FuelEntryRepository.GetFuelEntry(fuelEntryId);
+        var userId = userContextService.GetUserId();
+        var fuelEntryEntity = await unitOfWork.FuelEntryRepository.GetFuelEntry(fuelEntryId, userId);
         if (fuelEntryEntity == null)
         {
             return Result<FuelEntryResponse>

@@ -19,9 +19,10 @@ public class FuelEntryRepository(FuelTrackerContext context)
             .ToListAsync();
     }
 
-    public ValueTask<FuelEntry?> GetFuelEntry(Guid fuelEntryId)
+    public Task<FuelEntry?> GetFuelEntry(Guid fuelEntryId, Guid userId)
     {
-        return context.FuelEntries.FindAsync(fuelEntryId);
+        return context.FuelEntries
+            .FirstOrDefaultAsync(f => f.Id == fuelEntryId && f.CarEntity.UserId == userId);
     }
 
     public void Remove(FuelEntry fuelEntry)
