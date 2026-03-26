@@ -1,0 +1,13 @@
+**/*.bin
+**/*.obj
+.git
+.idea
+.vs
+bin
+obj
+Dockerfile
+.dockerignore
+**/dist
+node_modules
+out
+publish

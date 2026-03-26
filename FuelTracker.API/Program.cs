@@ -7,14 +7,27 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration["DATABASE_HOST"] != null
+    ? new NpgsqlConnectionStringBuilder
+    {
+        Host = builder.Configuration["DATABASE_HOST"],
+        Username = builder.Configuration["DATABASE_USER"],
+        Password = builder.Configuration["DATABASE_PASSWORD"],
+        Database = builder.Configuration["DATABASE_NAME"],
+        Port = 5432,
+        SslMode = SslMode.Prefer
+    }.ToString()
+    : builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FuelTrackerContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddOptions<JwtSettings>()
     .BindConfiguration("JwtSettings")
@@ -45,6 +58,17 @@ builder.Services
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularUI",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<CarRepository>();
 builder.Services.AddScoped<FuelEntryRepository>();
@@ -65,6 +89,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAngularUI");
 
 app.UseAuthentication();
 app.UseAuthorization();
