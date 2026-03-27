@@ -1,7 +1,7 @@
 ﻿namespace FuelTracker.API.Models;
 
 public record FuelEntryRequest(
-    DateTime Date,
+    DateOnly Date,
     int Odometer,
     decimal Liters,
     decimal PricePerLiter);

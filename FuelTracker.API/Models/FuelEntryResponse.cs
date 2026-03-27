@@ -2,7 +2,7 @@
 
 public record FuelEntryResponse(
     Guid Id,
-    DateTime Date,
+    DateOnly Date,
     int Odometer,
     decimal Liters,
     decimal PricePerLiter,
