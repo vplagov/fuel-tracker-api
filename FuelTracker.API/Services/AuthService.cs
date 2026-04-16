@@ -1,5 +1,6 @@
 using FuelTracker.API.Database;
 using FuelTracker.API.Entities;
+using FuelTracker.API.Extensions;
 using FuelTracker.API.Models;
 using FuelTracker.API.Security;
 using FuelTracker.API.Shared;
@@ -30,9 +31,8 @@ public class AuthService(
         
         unitOfWork.UserRepository.Add(userEntity);
         await unitOfWork.CommitAsync();
-
-        var userResponse = new UserResponse(userEntity.Id, userEntity.Username);
-        return Result<UserResponse>.Success(userResponse);
+        
+        return Result<UserResponse>.Success(userEntity.ToResponse());
     }
 
     public async Task<Result<LoginResponse>> Login(LoginRequest loginRequest)

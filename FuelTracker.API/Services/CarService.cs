@@ -1,5 +1,6 @@
 ﻿using FuelTracker.API.Database;
 using FuelTracker.API.Entities;
+using FuelTracker.API.Extensions;
 using FuelTracker.API.Models;
 using FuelTracker.API.Shared;
 
@@ -18,8 +19,8 @@ public class CarService(IUnitOfWork unitOfWork, UserContextService userContextSe
         };
         unitOfWork.CarRepository.Add(carEntity);
         await unitOfWork.CommitAsync();
-
-        return new CarResponse(Id: carEntity.Id, Name: carEntity.Name);
+        
+        return carEntity.ToResponse();
     }
 
     public async Task<List<CarResponse>> GetCars()
@@ -27,7 +28,7 @@ public class CarService(IUnitOfWork unitOfWork, UserContextService userContextSe
         var userId = userContextService.GetUserId();
         var cars = await unitOfWork.CarRepository.GetCars(userId);
         return cars
-            .Select(e => new CarResponse(Id: e.Id, Name: e.Name))
+            .Select(e => e.ToResponse())
             .ToList();
     }
 
@@ -37,6 +38,6 @@ public class CarService(IUnitOfWork unitOfWork, UserContextService userContextSe
         var car = await unitOfWork.CarRepository.GetCar(id, userId);
         return car == null  ? 
             Result<CarResponse>.Failure(ErrorType.NotFound, $"Car with id '{id}' not found") :
-            Result<CarResponse>.Success(new CarResponse(car.Id, car.Name));
+            Result<CarResponse>.Success(car.ToResponse());
     }
 }
