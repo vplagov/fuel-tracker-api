@@ -4,7 +4,7 @@ RUN dotnet tool install --global dotnet-ef
 ENV PATH="$PATH:/root/.dotnet/tools"
 COPY ["FuelTracker.sln", "global.json", "./"]
 COPY ["FuelTracker.API/FuelTracker.API.csproj", "FuelTracker.API/"]
-RUN dotnet restore
+RUN dotnet restore "FuelTracker.API/FuelTracker.API.csproj"
 COPY . .
 WORKDIR "/src/FuelTracker.API"
 RUN dotnet publish "FuelTracker.API.csproj" -c Release -o /app/publish
