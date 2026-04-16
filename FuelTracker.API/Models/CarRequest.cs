@@ -1,3 +1,5 @@
-﻿namespace FuelTracker.API.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record CarRequest(string Name);
+namespace FuelTracker.API.Models;
+
+public record CarRequest([Required] string Name);
