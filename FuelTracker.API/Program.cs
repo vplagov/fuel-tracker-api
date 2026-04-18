@@ -77,6 +77,7 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<CarService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<FuelEntryService>();
+builder.Services.AddScoped<StatisticsService>();
 builder.Services.AddSingleton<JwtService>();
 builder.Services.AddScoped<UserContextService>();
 

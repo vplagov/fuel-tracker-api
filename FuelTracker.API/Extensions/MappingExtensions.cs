@@ -23,6 +23,7 @@ public static class MappingExtensions
             entity.Odometer,
             entity.Liters,
             entity.PricePerLiter,
-            entity.TotalCost);
+            entity.TotalCost,
+            entity.IsFullTank);
     }
 }

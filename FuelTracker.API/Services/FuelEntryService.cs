@@ -25,7 +25,8 @@ public class FuelEntryService(IUnitOfWork unitOfWork, UserContextService userCon
             Liters = request.Liters,
             Odometer = request.Odometer,
             PricePerLiter = request.PricePerLiter,
-            TotalCost = request.PricePerLiter * request.Liters
+            TotalCost = request.PricePerLiter * request.Liters,
+            IsFullTank = request.IsFullTank
         };
         
         unitOfWork.FuelEntryRepository.Add(fuelEntry);
@@ -82,6 +83,7 @@ public class FuelEntryService(IUnitOfWork unitOfWork, UserContextService userCon
         fuelEntryEntity.Liters = payload.Liters;
         fuelEntryEntity.PricePerLiter = payload.PricePerLiter;
         fuelEntryEntity.TotalCost = payload.Liters * payload.PricePerLiter;
+        fuelEntryEntity.IsFullTank = payload.IsFullTank;
         
         await unitOfWork.CommitAsync();
 

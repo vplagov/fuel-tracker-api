@@ -6,4 +6,5 @@ public record FuelEntryResponse(
     int Odometer,
     decimal Liters,
     decimal PricePerLiter,
-    decimal TotalCost);
+    decimal TotalCost,
+    bool IsFullTank);
