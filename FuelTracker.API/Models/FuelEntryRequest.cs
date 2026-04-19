@@ -7,4 +7,4 @@ public record FuelEntryRequest(
     [Range(0, 1_000_000)] int Odometer,
     [Range(0.01, 1000)] decimal Liters,
     [Range(0.01, 100)] decimal PricePerLiter,
-    bool IsFullTank = true);
+    bool IsFullTank);

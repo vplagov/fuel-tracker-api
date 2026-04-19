@@ -19,7 +19,7 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
     {
         // Arrange
         var carId = await CreateCarAsync("Test Car");
-        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m);
+        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m, true);
 
         // Act
         var response = await Client.PostAsJsonAsync($"/api/cars/{carId}/fuel-entries", request);
@@ -37,7 +37,7 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
     {
         // Arrange
         var nonExistentCarId = Guid.NewGuid();
-        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m);
+        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m, true);
 
         // Act
         var response = await Client.PostAsJsonAsync($"/api/cars/{nonExistentCarId}/fuel-entries", request);
@@ -51,7 +51,7 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
     {
         // Arrange
         var carId = await CreateCarAsync("Test Car");
-        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m);
+        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m, true);
         await Client.PostAsJsonAsync($"/api/cars/{carId}/fuel-entries", request);
 
         // Act
@@ -69,7 +69,7 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
     {
         // Arrange
         var carId = await CreateCarAsync("Test Car");
-        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m);
+        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m, true);
         var createResponse = await Client.PostAsJsonAsync($"/api/cars/{carId}/fuel-entries", request);
         var fuelEntry = await createResponse.Content.ReadFromJsonAsync<FuelEntryResponse>();
 
@@ -90,7 +90,7 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
     {
         // Arrange
         var carId = await CreateCarAsync("Test Car");
-        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m);
+        var request = new FuelEntryRequest(DateOnly.FromDateTime(DateTime.Now), 1000, 50, 1.5m, true);
         var createResponse = await Client.PostAsJsonAsync($"/api/cars/{carId}/fuel-entries", request);
         var fuelEntry = await createResponse.Content.ReadFromJsonAsync<FuelEntryResponse>();
         
@@ -110,7 +110,7 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
     {
         // Arrange
         var carId = await CreateCarAsync("Test Car");
-        var request = new FuelEntryRequest(default, -1, -1, -1); // Invalid values
+        var request = new FuelEntryRequest(default, -1, -1, -1, true); // Invalid values
 
         // Act
         var response = await Client.PostAsJsonAsync($"/api/cars/{carId}/fuel-entries", request);

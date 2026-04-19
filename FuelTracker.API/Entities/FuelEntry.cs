@@ -9,7 +9,7 @@ public class FuelEntry
     public decimal Liters { get; set; }
     public decimal PricePerLiter { get; set; }
     public decimal TotalCost { get; set; }
-    public bool IsFullTank { get; set; } = true;
+    public bool IsFullTank { get; set; }
 
     public CarEntity CarEntity { get; set; } = null!;
 }
