@@ -8,6 +8,9 @@ obj
 Dockerfile
 .dockerignore
 **/dist
+**/node_modules
+**/.angular
+**/out-tsc
 node_modules
 out
 publish

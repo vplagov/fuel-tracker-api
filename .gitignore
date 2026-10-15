@@ -8,3 +8,12 @@ riderModule.iml
 .idea/
 appsettings.Development.json
 *.user
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/out-tsc/
+
+# Angular build output copied into the API (generated in Docker)
+FuelTracker.API/wwwroot/

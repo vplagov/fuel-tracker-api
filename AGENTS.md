@@ -42,4 +42,20 @@ Users can register, create multiple cars, and log fuel entries with detailed inf
 - **API Documentation**: Swagger/OpenAPI
 - **Architecture Pattern**: Repository Pattern with Dependency Injection
 - **Language**: C# 14
+- **Frontend**: Angular 20 (standalone components, Tailwind CSS), served as static files by the API
+
+### Repository Layout
+- `FuelTracker.API/` — the ASP.NET Core backend.
+- `frontend/` — the Angular workspace (single project `fuel-tracker-ui` under `frontend/projects/fuel-tracker-ui`).
+- In production the built frontend is copied into `FuelTracker.API/wwwroot` by the `Dockerfile` and served by the API (same origin as `/api`). `wwwroot` is generated and git-ignored.
+
+### Local Development
+Run the two processes side by side:
+- Backend: `dotnet run --project FuelTracker.API` (listens on `http://localhost:5158`).
+- Frontend: `cd frontend && npm install && npx ng serve fuel-tracker-ui` (listens on `http://localhost:4200` and proxies `/api` to `5158` via `projects/fuel-tracker-ui/proxy.conf.json`; CORS allows `http://localhost:4200`).
+
+### Frontend Commands
+- Lint: `cd frontend && npx ng lint`
+- Test: `cd frontend && npx ng test fuel-tracker-ui --watch=false --browsers=ChromeHeadless`
+- Build: `cd frontend && npx ng build fuel-tracker-ui --configuration production`
 

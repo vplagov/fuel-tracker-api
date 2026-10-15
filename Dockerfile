@@ -1,3 +1,11 @@
+FROM node:24-alpine AS frontend-build
+WORKDIR /app/frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+COPY frontend/angular.json frontend/tsconfig.json frontend/tailwind.config.js frontend/postcss.config.js ./
+COPY frontend/projects ./projects
+RUN npx ng build fuel-tracker-ui --configuration production
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0.103-alpine3.23 AS build
 WORKDIR /src
 RUN dotnet tool install --global dotnet-ef
@@ -6,6 +14,7 @@ COPY ["FuelTracker.sln", "global.json", "./"]
 COPY ["FuelTracker.API/FuelTracker.API.csproj", "FuelTracker.API/"]
 RUN dotnet restore "FuelTracker.API/FuelTracker.API.csproj"
 COPY . .
+COPY --from=frontend-build /app/frontend/dist/fuel-tracker-ui/browser ./FuelTracker.API/wwwroot
 WORKDIR "/src/FuelTracker.API"
 RUN dotnet publish "FuelTracker.API.csproj" -c Release -o /app/publish
 RUN dotnet ef migrations bundle --self-contained -r linux-musl-x64 -o /app/publish/migrate
