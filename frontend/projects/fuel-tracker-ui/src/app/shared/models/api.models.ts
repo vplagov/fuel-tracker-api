@@ -15,6 +15,14 @@ export interface CarResponse {
   name: string;
 }
 
+export interface PagedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 export interface FuelEntryResponse {
   id: string;
   date: string;

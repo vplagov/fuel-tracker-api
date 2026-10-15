@@ -8,6 +8,8 @@ namespace FuelTracker.API.Services;
 
 public class FuelEntryService(IUnitOfWork unitOfWork, UserContextService userContextService)
 {
+    private const int MaxPageSize = 100;
+
     public async Task<Result<FuelEntryResponse>> Add(Guid carId, FuelEntryRequest request)
     {
         var userId = userContextService.GetUserId();
@@ -35,22 +37,32 @@ public class FuelEntryService(IUnitOfWork unitOfWork, UserContextService userCon
         return Result<FuelEntryResponse>.Success(fuelEntry.ToResponse());
     }
 
-    public async Task<Result<List<FuelEntryResponse>>> GetFuelEntries(Guid carId)
+    public async Task<Result<PagedResponse<FuelEntryResponse>>> GetFuelEntries(
+        Guid carId, int page, int pageSize)
     {
         var userId = userContextService.GetUserId();
         var car = await unitOfWork.CarRepository.GetCar(carId, userId);
         if (car == null)
         {
-            return  Result<List<FuelEntryResponse>>
+            return Result<PagedResponse<FuelEntryResponse>>
                 .Failure(ErrorType.NotFound, $"Car with ID '{carId}' not found");
         }
-        
-        var fuelEntries = await unitOfWork.FuelEntryRepository.GetFuelEntries(carId);
+
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
+
+        var totalCount = await unitOfWork.FuelEntryRepository.CountFuelEntries(carId);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var fuelEntries = await unitOfWork.FuelEntryRepository
+            .GetFuelEntries(carId, page, pageSize);
         var fuelEntryResponses = fuelEntries
             .Select(fuelEntry => fuelEntry.ToResponse())
             .ToList();
-        return Result<List<FuelEntryResponse>>
-            .Success(fuelEntryResponses);
+
+        return Result<PagedResponse<FuelEntryResponse>>
+            .Success(new PagedResponse<FuelEntryResponse>(
+                fuelEntryResponses, page, pageSize, totalCount, totalPages));
     }
 
     public async Task<Result> Remove(Guid fuelEntryId)

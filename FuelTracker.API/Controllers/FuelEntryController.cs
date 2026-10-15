@@ -20,9 +20,12 @@ public class FuelEntryController(FuelEntryService fuelEntryService) : BaseContro
     }
 
     [HttpGet("cars/{carId:guid}/fuel-entries")]
-    public async Task<ActionResult<IList<FuelEntryResponse>>> GetFuelEntries(Guid carId)
+    public async Task<ActionResult<PagedResponse<FuelEntryResponse>>> GetFuelEntries(
+        Guid carId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var result = await fuelEntryService.GetFuelEntries(carId);
+        var result = await fuelEntryService.GetFuelEntries(carId, page, pageSize);
         return result.IsFailure ? 
             HandleFailure(result) : 
             Ok(result.Value);

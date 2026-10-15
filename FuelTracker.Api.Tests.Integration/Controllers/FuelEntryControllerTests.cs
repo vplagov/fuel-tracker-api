@@ -14,6 +14,13 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
         return car!.Id;
     }
 
+    private async Task CreateFuelEntryAsync(Guid carId, DateOnly date, int odometer)
+    {
+        var request = new FuelEntryRequest(date, odometer, 50, 1.5m, true);
+        var response = await Client.PostAsJsonAsync($"/api/cars/{carId}/fuel-entries", request);
+        response.EnsureSuccessStatusCode();
+    }
+
     [Fact]
     public async Task Add_ShouldReturnCreated_WhenRequestIsValid()
     {
@@ -59,9 +66,13 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var entries = await response.Content.ReadFromJsonAsync<List<FuelEntryResponse>>();
-        entries.Should().NotBeNull();
-        entries.Should().HaveCount(1);
+        var result = await response.Content.ReadFromJsonAsync<PagedResponse<FuelEntryResponse>>();
+        result.Should().NotBeNull();
+        result!.Items.Should().HaveCount(1);
+        result.TotalCount.Should().Be(1);
+        result.Page.Should().Be(1);
+        result.PageSize.Should().Be(10);
+        result.TotalPages.Should().Be(1);
     }
 
     [Fact]
@@ -81,8 +92,8 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
 
         // Verify deletion
         var getResponse = await Client.GetAsync($"/api/cars/{carId}/fuel-entries");
-        var entries = await getResponse.Content.ReadFromJsonAsync<List<FuelEntryResponse>>();
-        entries.Should().BeEmpty();
+        var result = await getResponse.Content.ReadFromJsonAsync<PagedResponse<FuelEntryResponse>>();
+        result!.Items.Should().BeEmpty();
     }
 
     [Fact]
@@ -117,5 +128,85 @@ public class FuelEntryControllerTests(IntegrationTestFactory factory) : BaseInte
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task GetFuelEntries_ShouldReturnNewestFirst_AndPaginate()
+    {
+        // Arrange
+        var carId = await CreateCarAsync("Test Car");
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        for (var i = 0; i < 12; i++)
+        {
+            await CreateFuelEntryAsync(carId, today.AddDays(-i), 1000 + i);
+        }
+
+        // Act
+        var page1Response = await Client.GetAsync($"/api/cars/{carId}/fuel-entries?page=1&pageSize=10");
+        var page1 = await page1Response.Content.ReadFromJsonAsync<PagedResponse<FuelEntryResponse>>();
+
+        // Assert
+        page1!.Items.Should().HaveCount(10);
+        page1.TotalCount.Should().Be(12);
+        page1.TotalPages.Should().Be(2);
+        page1.Items.First().Odometer.Should().Be(1000);
+        page1.Items.Last().Odometer.Should().Be(1009);
+
+        var page2Response = await Client.GetAsync($"/api/cars/{carId}/fuel-entries?page=2&pageSize=10");
+        var page2 = await page2Response.Content.ReadFromJsonAsync<PagedResponse<FuelEntryResponse>>();
+
+        page2!.Items.Should().HaveCount(2);
+        page2.Items.Select(e => e.Odometer).Should().Equal(1010, 1011);
+    }
+
+    [Fact]
+    public async Task GetFuelEntries_ShouldReturnEmptyItems_WhenPageOutOfRange()
+    {
+        // Arrange
+        var carId = await CreateCarAsync("Test Car");
+        await CreateFuelEntryAsync(carId, DateOnly.FromDateTime(DateTime.Now), 1000);
+
+        // Act
+        var response = await Client.GetAsync($"/api/cars/{carId}/fuel-entries?page=5&pageSize=10");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<PagedResponse<FuelEntryResponse>>();
+        result!.Items.Should().BeEmpty();
+        result.Page.Should().Be(5);
+        result.TotalCount.Should().Be(1);
+        result.TotalPages.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GetFuelEntries_ShouldReturnZeroTotalPages_WhenNoEntries()
+    {
+        // Arrange
+        var carId = await CreateCarAsync("Test Car");
+
+        // Act
+        var response = await Client.GetAsync($"/api/cars/{carId}/fuel-entries");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<PagedResponse<FuelEntryResponse>>();
+        result!.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetFuelEntries_ShouldClampPageSize_WhenAboveMaximum()
+    {
+        // Arrange
+        var carId = await CreateCarAsync("Test Car");
+        await CreateFuelEntryAsync(carId, DateOnly.FromDateTime(DateTime.Now), 1000);
+
+        // Act
+        var response = await Client.GetAsync($"/api/cars/{carId}/fuel-entries?page=1&pageSize=1000");
+
+        // Assert
+        var result = await response.Content.ReadFromJsonAsync<PagedResponse<FuelEntryResponse>>();
+        result!.PageSize.Should().Be(100);
     }
 }

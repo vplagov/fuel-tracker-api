@@ -192,6 +192,31 @@ import { FormsModule } from '@angular/forms';
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination Controls -->
+      <div *ngIf="totalPages > 0" class="flex items-center justify-between">
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            (click)="goToPage(currentPage - 1)"
+            [disabled]="currentPage <= 1"
+            class="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            (click)="goToPage(currentPage + 1)"
+            [disabled]="currentPage >= totalPages"
+            class="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   `,
 })
@@ -199,7 +224,11 @@ export class CarDetailComponent implements OnInit {
   car: CarResponse | null = null;
   entries: FuelEntryResponse[] = [];
   editingId: string | null = null;
+  currentPage = 1;
+  readonly pageSize = 10;
+  totalPages = 0;
 
+  private carId: string | null = null;
   newEntry: FuelEntryRequest = this.resetEntryForm();
 
   get isPartialFillUp(): boolean {
@@ -216,17 +245,29 @@ export class CarDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.loadData(id);
+      this.carId = id;
+      this.dataService.getCar(id).subscribe((car) => (this.car = car));
+      this.loadEntries(1);
     }
   }
 
-  loadData(carId: string) {
-    this.dataService.getCar(carId).subscribe((car) => (this.car = car));
-    this.dataService.getFuelEntries(carId).subscribe((entries) => {
-      this.entries = entries.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-      );
+  loadEntries(page: number) {
+    if (!this.carId) return;
+
+    this.dataService.getFuelEntries(this.carId, page, this.pageSize).subscribe((response) => {
+      this.entries = response.items;
+      this.currentPage = response.page;
+      this.totalPages = response.totalPages;
+
+      if (this.entries.length === 0 && this.currentPage > 1) {
+        this.loadEntries(this.currentPage - 1);
+      }
     });
+  }
+
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) return;
+    this.loadEntries(page);
   }
 
   saveEntry() {
@@ -238,13 +279,13 @@ export class CarDetailComponent implements OnInit {
 
     if (this.editingId) {
       this.dataService.updateFuelEntry(this.editingId, entryToSave).subscribe(() => {
-        this.loadData(this.car!.id);
+        this.loadEntries(this.currentPage);
         this.cancelEdit();
       });
     } else {
       this.dataService.addFuelEntry(this.car.id, entryToSave).subscribe(() => {
-        this.loadData(this.car!.id);
         this.newEntry = this.resetEntryForm();
+        this.loadEntries(1);
       });
     }
   }
@@ -269,8 +310,8 @@ export class CarDetailComponent implements OnInit {
   }
 
   deleteEntry(id: string) {
-    if (confirm('Are you sure you want to delete this entry?') && this.car) {
-      this.dataService.deleteFuelEntry(id).subscribe(() => this.loadData(this.car!.id));
+    if (confirm('Are you sure you want to delete this entry?')) {
+      this.dataService.deleteFuelEntry(id).subscribe(() => this.loadEntries(this.currentPage));
     }
   }
 

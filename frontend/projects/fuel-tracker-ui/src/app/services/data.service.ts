@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
@@ -7,6 +7,7 @@ import {
   CarResponse,
   FuelEntryRequest,
   FuelEntryResponse,
+  PagedResponse,
   AverageConsumptionResponse,
 } from '../shared/models/api.models';
 
@@ -38,8 +39,16 @@ export class DataService {
   }
 
   // Fuel Entries
-  getFuelEntries(carId: string): Observable<FuelEntryResponse[]> {
-    return this.http.get<FuelEntryResponse[]>(`${this.apiUrl}/cars/${carId}/fuel-entries`);
+  getFuelEntries(
+    carId: string,
+    page: number,
+    pageSize: number,
+  ): Observable<PagedResponse<FuelEntryResponse>> {
+    const params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    return this.http.get<PagedResponse<FuelEntryResponse>>(
+      `${this.apiUrl}/cars/${carId}/fuel-entries`,
+      { params },
+    );
   }
 
   addFuelEntry(carId: string, request: FuelEntryRequest): Observable<FuelEntryResponse> {
