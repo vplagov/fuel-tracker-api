@@ -59,3 +59,8 @@ Run the two processes side by side:
 - Test: `cd frontend && npx ng test fuel-tracker-ui --watch=false --browsers=ChromeHeadless`
 - Build: `cd frontend && npx ng build fuel-tracker-ui --configuration production`
 
+
+<!-- entire-agent:begin -->
+Read .entire/agent-guide.md for this repository's workflow, source inspection, and verification guidance.
+@.entire/agent-guide.md
+<!-- entire-agent:end -->
